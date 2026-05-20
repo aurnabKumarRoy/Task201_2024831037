@@ -7,9 +7,9 @@
             "command": "C:/mingw64/bin/g++.exe",
             "args": [
                 "-g",
-                "${file}",
+                "${workspaceFolder}/src/*.cpp",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}.exe",
+                "${workspaceFolder}/bin/main.exe",
                 "-I", "C:/SFML-3.0.2/include",
                 "-L", "C:/SFML-3.0.2/lib",
                 "-lsfml-graphics",
