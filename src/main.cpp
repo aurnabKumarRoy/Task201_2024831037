@@ -6,32 +6,42 @@
 using namespace sf;
 
 const int GRID_SIZE=20;
-const int WIN_W=800;
-const int WIN_H=600;
+const int WIN_W=1600;
+const int WIN_H=900;
 
 struct GameState{
     std::vector<Vector2i>snake;
+    Vector2i food;
 };
 
 void initState(GameState& state){
     state.snake.clear();
+    state.snake.push_back(Vector2i(2,WIN_H/(2*GRID_SIZE)));
     state.snake.push_back(Vector2i(1,WIN_H/(2*GRID_SIZE)));
     state.snake.push_back(Vector2i(0,WIN_H/(2*GRID_SIZE)));
-    state.snake.push_back(Vector2i(2,WIN_H/(2*GRID_SIZE)));
+    state.food=Vector2i(rand()%(WIN_W/GRID_SIZE),rand()%(WIN_H/GRID_SIZE));
 }
 
 void drawSnake(RenderWindow& window,Color color ,Vector2i cordinate){
-    RectangleShape snake(Vector2f({(float)GRID_SIZE-.5f,(float)GRID_SIZE}));
+    RectangleShape snake(Vector2f({(float)GRID_SIZE-1.5f,(float)GRID_SIZE-1.5f}));
     snake.setPosition({(float)(cordinate.x * GRID_SIZE) ,(float)(cordinate.y * GRID_SIZE)});
     snake.setFillColor(color);
     window.draw(snake);
 }
 
+void drawFood(RenderWindow& window ,Vector2i cordinate){
+    CircleShape food(GRID_SIZE/2,100);
+    food.setFillColor(Color::Red);
+    food.setPosition({(float)(cordinate.x * GRID_SIZE) ,(float)(cordinate.y * GRID_SIZE)});
+    window.draw(food);
+}
+
 void renderGame(RenderWindow& window ,const GameState& state){
-    window.clear(Color(154,247,100));
+    window.clear(Color::Black);
+        drawFood(window,state.food);
 
     for(int i=0;i<state.snake.size();i++){
-        drawSnake(window,Color(0,119,182),state.snake[i]);
+        drawSnake(window,Color::Green,state.snake[i]);
     }
     window.display();
 
