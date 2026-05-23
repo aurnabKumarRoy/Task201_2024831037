@@ -12,6 +12,7 @@ const int WIN_H=900;
 struct GameState{
     std::vector<Vector2i>snake;
     Vector2i food;
+    char direction;
 };
 
 void initState(GameState& state){
@@ -20,6 +21,7 @@ void initState(GameState& state){
     state.snake.push_back(Vector2i(1,WIN_H/(2*GRID_SIZE)));
     state.snake.push_back(Vector2i(0,WIN_H/(2*GRID_SIZE)));
     state.food=Vector2i(rand()%(WIN_W/GRID_SIZE),rand()%(WIN_H/GRID_SIZE));
+    state.direction='X'; 
 }
 
 void drawSnake(RenderWindow& window,Color color ,Vector2i cordinate){
@@ -34,6 +36,27 @@ void drawFood(RenderWindow& window ,Vector2i cordinate){
     food.setFillColor(Color::Red);
     food.setPosition({(float)(cordinate.x * GRID_SIZE) ,(float)(cordinate.y * GRID_SIZE)});
     window.draw(food);
+}
+
+void keyInput(GameState& state){
+    if(Keyboard::isKeyPressed(Keyboard::Key::Left) && state.direction!='R') state.direction='L';
+    if(Keyboard::isKeyPressed(Keyboard::Key::Right) && state.direction!='L') state.direction='R';
+    if(Keyboard::isKeyPressed(Keyboard::Key::Up) && state.direction!='D') state.direction='U';
+    if(Keyboard::isKeyPressed(Keyboard::Key::Down) && state.direction!='U') state.direction='D';
+}
+
+void update(GameState& state){
+    if(state.direction=='X') return;
+
+    Vector2i head=state.snake[0];
+
+    if(state.direction=='L') head.x--;
+    if(state.direction=='R') head.x++;
+    if(state.direction=='U') head.y--;
+    if(state.direction=='D') head.y++;
+
+    state.snake.insert(state.snake.begin(),head);
+    state.snake.pop_back();
 }
 
 void renderGame(RenderWindow& window ,const GameState& state){
@@ -57,7 +80,7 @@ void closeWindow(RenderWindow &window){
 
 int main(){
     RenderWindow window(VideoMode({WIN_W, WIN_H}),"Snake Game");
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(10);
 
     GameState state;
     initState(state);
@@ -65,7 +88,9 @@ int main(){
     while (window.isOpen()){
 
         closeWindow(window);
-        renderGame(window,state);
+        keyInput(state);
+        update(state);
+        renderGame(window,state);  
 
     }
 }
