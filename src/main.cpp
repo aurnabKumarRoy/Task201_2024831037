@@ -39,10 +39,17 @@ void drawFood(RenderWindow& window ,Vector2i cordinate){
 }
 
 void keyInput(GameState& state){
-    if(Keyboard::isKeyPressed(Keyboard::Key::Left) && state.direction!='R') state.direction='L';
+    if(Keyboard::isKeyPressed(Keyboard::Key::Left ) && state.direction!='R') state.direction='L';
+    if(Keyboard::isKeyPressed(Keyboard::Key::A ) && state.direction!='R') state.direction='L';
+
     if(Keyboard::isKeyPressed(Keyboard::Key::Right) && state.direction!='L') state.direction='R';
+    if(Keyboard::isKeyPressed(Keyboard::Key::D ) && state.direction!='L') state.direction='R';
+
     if(Keyboard::isKeyPressed(Keyboard::Key::Up) && state.direction!='D') state.direction='U';
+    if(Keyboard::isKeyPressed(Keyboard::Key::W) && state.direction!='D') state.direction='U';
+    
     if(Keyboard::isKeyPressed(Keyboard::Key::Down) && state.direction!='U') state.direction='D';
+    if(Keyboard::isKeyPressed(Keyboard::Key::S) && state.direction!='U') state.direction='D';
 }
 
 void update(GameState& state){
@@ -56,7 +63,14 @@ void update(GameState& state){
     if(state.direction=='D') head.y++;
 
     state.snake.insert(state.snake.begin(),head);
-    state.snake.pop_back();
+
+    if (head==state.food){
+        state.food.x=rand()%(WIN_W/GRID_SIZE);
+        state.food.y=rand()%(WIN_H/GRID_SIZE);
+    }
+    else{
+        state.snake.pop_back();
+    }
 }
 
 void renderGame(RenderWindow& window ,const GameState& state){
