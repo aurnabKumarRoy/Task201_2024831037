@@ -13,6 +13,7 @@ struct GameState{
     std::vector<Vector2i>snake;
     Vector2i food;
     char direction;
+    bool gameOver;
 };
 
 void initState(GameState& state){
@@ -22,6 +23,7 @@ void initState(GameState& state){
     state.snake.push_back(Vector2i(0,WIN_H/(2*GRID_SIZE)));
     state.food=Vector2i(rand()%(WIN_W/GRID_SIZE),rand()%(WIN_H/GRID_SIZE));
     state.direction='X'; 
+    state.gameOver=false;
 }
 
 void drawSnake(RenderWindow& window,Color color ,Vector2i cordinate){
@@ -53,6 +55,10 @@ void keyInput(GameState& state){
 }
 
 void update(GameState& state){
+    if(state.gameOver==true){
+        return initState(state);
+    }
+
     if(state.direction=='X') return;
 
     Vector2i head=state.snake[0];
@@ -71,6 +77,19 @@ void update(GameState& state){
     else{
         state.snake.pop_back();
     }
+
+    //Collision check with Own body
+    for(size_t i=1;i<state.snake.size();i++){
+        if(head==state.snake[i]){
+            state.gameOver=true;
+        }
+    }
+
+    //collision check with WIndow border
+    if(head.x<0 || head.x>WIN_W/GRID_SIZE || head.y<0 || head.y>WIN_H/GRID_SIZE){
+        state.gameOver=true;
+    }
+
 }
 
 void renderGame(RenderWindow& window ,const GameState& state){
