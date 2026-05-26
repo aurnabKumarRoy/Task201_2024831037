@@ -29,7 +29,7 @@ void initState(GameState& state){
 }
 
 void drawSnake(RenderWindow& window,Color color ,Vector2i cordinate){
-    RectangleShape snake(Vector2f({(float)GRID_SIZE-1.5f,(float)GRID_SIZE-1.5f}));
+    RectangleShape snake(Vector2f({(float)GRID_SIZE,(float)GRID_SIZE}));
     snake.setPosition({(float)(cordinate.x * GRID_SIZE) ,(float)(cordinate.y * GRID_SIZE)});
     snake.setFillColor(color);
     window.draw(snake);
@@ -40,6 +40,35 @@ void drawFood(RenderWindow& window ,Vector2i cordinate){
     food.setFillColor(Color::Red);
     food.setPosition({(float)(cordinate.x * GRID_SIZE) ,(float)(cordinate.y * GRID_SIZE)});
     window.draw(food);
+}
+
+void drawSnakeEye(RenderWindow& window,const GameState& state){
+        CircleShape eye1(2.5f);
+        CircleShape eye2(2.5f);
+        eye1.setFillColor(Color::Black);
+        eye2.setFillColor(Color::Black);
+
+        float x = state.snake[0].x * GRID_SIZE;
+        float y= state.snake[0].y * GRID_SIZE;
+
+        if (state.direction =='R' ||state.direction =='X') {
+            eye1.setPosition({x + 12.f,y + 4.f});
+            eye2.setPosition({x + 12.f,y +12.f});
+        } 
+        else if (state.direction == 'L') {
+            eye1.setPosition({x + 4.f, y + 4.f});
+            eye2.setPosition({x + 4.f, y +12.f});
+        } 
+        else if (state.direction == 'U') {
+            eye1.setPosition({x + 4.f, y + 4.f});
+            eye2.setPosition({x + 12.f,y + 4.f});
+        } 
+        else if (state.direction== 'D') {
+            eye1.setPosition({x + 4.f, y +12.f});
+            eye2.setPosition({x + 12.f,y +12.f});
+        }
+        window.draw(eye1);
+        window.draw(eye2);
 }
 
 void scoreTracking(RenderWindow& window, const GameState& state){
@@ -116,6 +145,9 @@ void renderGame(RenderWindow& window ,const GameState& state){
     for(int i=0;i<state.snake.size();i++){
         drawSnake(window,Color::Green,state.snake[i]);
     }
+
+    //SnakeEye
+    drawSnakeEye(window,state);
      
     //Score Text
     scoreTracking(window,state);
