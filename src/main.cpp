@@ -6,14 +6,15 @@
 using namespace sf;
 
 const int GRID_SIZE=20;
-const int WIN_W=1600;
-const int WIN_H=900;
+const int WIN_W=1200;
+const int WIN_H=800;
 
 struct GameState{
     std::vector<Vector2i>snake;
     Vector2i food;
     char direction;
     bool gameOver;
+    int score;
 };
 
 void initState(GameState& state){
@@ -24,6 +25,7 @@ void initState(GameState& state){
     state.food=Vector2i(rand()%(WIN_W/GRID_SIZE),rand()%(WIN_H/GRID_SIZE));
     state.direction='X'; 
     state.gameOver=false;
+    state.score=0;
 }
 
 void drawSnake(RenderWindow& window,Color color ,Vector2i cordinate){
@@ -38,6 +40,19 @@ void drawFood(RenderWindow& window ,Vector2i cordinate){
     food.setFillColor(Color::Red);
     food.setPosition({(float)(cordinate.x * GRID_SIZE) ,(float)(cordinate.y * GRID_SIZE)});
     window.draw(food);
+}
+
+void scoreTracking(RenderWindow& window, const GameState& state){
+    Font font;
+    if(!font.openFromFile("fonts/ARIALN.TTF")){
+        std::cout<<"Font did not load";
+        return;
+    }
+
+    Text score(font, "Score: " + std::to_string(state.score), 40);
+    score.setFillColor(Color::White);
+    score.setPosition({20.f, 20.f});
+    window.draw(score);
 }
 
 void keyInput(GameState& state){
@@ -71,6 +86,7 @@ void update(GameState& state){
     state.snake.insert(state.snake.begin(),head);
 
     if (head==state.food){
+        state.score+=100;
         state.food.x=rand()%(WIN_W/GRID_SIZE);
         state.food.y=rand()%(WIN_H/GRID_SIZE);
     }
@@ -85,8 +101,8 @@ void update(GameState& state){
         }
     }
 
-    //collision check with WIndow border
-    if(head.x<0 || head.x>WIN_W/GRID_SIZE || head.y<0 || head.y>WIN_H/GRID_SIZE){
+    //collision check with Window border
+    if(head.x<0 || head.x>=WIN_W/GRID_SIZE || head.y<0 || head.y>=WIN_H/GRID_SIZE){
         state.gameOver=true;
     }
 
@@ -96,9 +112,14 @@ void renderGame(RenderWindow& window ,const GameState& state){
     window.clear(Color::Black);
         drawFood(window,state.food);
 
+    // Drawing Snake
     for(int i=0;i<state.snake.size();i++){
         drawSnake(window,Color::Green,state.snake[i]);
     }
+     
+    //Score Text
+    scoreTracking(window,state);
+    
     window.display();
 
 }
