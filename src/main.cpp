@@ -5,7 +5,7 @@
 
 using namespace sf;
 
-const int GRID_SIZE=20;
+const int GRID_SIZE=25;
 const int WIN_W=1200;
 const int WIN_H=800;
 
@@ -97,9 +97,9 @@ void scoreTracking(RenderWindow& window, const GameState& state){
         return;
     }
 
-    Text score(font, "Score:" + std::to_string(state.score), 25);
+    Text score(font, "Score:" + std::to_string(state.score), GRID_SIZE);
     score.setFillColor(Color(26,54,93));
-    score.setPosition({20.f, 20.f});
+    score.setPosition({GRID_SIZE/2, GRID_SIZE/2});
     window.draw(score);
 }
 
@@ -117,28 +117,37 @@ void keyInput(GameState& state){
     if(Keyboard::isKeyPressed(Keyboard::Key::S) && state.direction!='U') state.direction='D';
 }
 
-void gameOverScreen(RenderWindow& window,const GameState& state){
+void restart(GameState& state){
+    if(state.gameOver){
+        if(Keyboard::isKeyPressed(Keyboard::Key::Enter)){
+            initState(state);
+        }
+    }
+}
+void gameOverScreen(RenderWindow& window,const GameState& state,const Font& font){
     if(state.gameOver==true){
         RectangleShape overlay(Vector2f(window.getSize().x,window.getSize().y));
-        overlay.setFillColor(Color(0,0,0,30));
+        overlay.setFillColor(Color(0,0,0,100));
         window.draw(overlay);
 
-        Font font;
-        if(!font.openFromFile("fonts/pixel.ttf")){
-            std::cout<<"Font did not load";
-        return;
-        }
+       
 
         Text text1(font,"GAME OVER \n\nScore:"+std::to_string(state.score),45);
         text1.setFillColor(Color::White);
         text1.setPosition({WIN_W/3,WIN_H/3});
         window.draw(text1);
+
+        Text text2(font,"Press ENTER to restart",30);
+        text2.setFillColor(Color::White);
+        text2.setPosition({WIN_W/4-30.f,440});
+        window.draw(text2);
+
     }
 }
 
 void update(GameState& state){
-    if(state.gameOver==true) return;
-    if(state.direction=='X') return;
+    restart(state);
+    if(state.gameOver || state.direction=='X') return;
 
     Vector2i head=state.snake[0];
 
@@ -172,7 +181,7 @@ void update(GameState& state){
 
 }
 
-void renderGame(RenderWindow& window ,const GameState& state){
+void renderGame(RenderWindow& window ,const GameState& state,const Font& font){
     window.clear(Color::Black);
     background(window);
     drawFood(window,state.food);
@@ -186,7 +195,7 @@ void renderGame(RenderWindow& window ,const GameState& state){
     drawSnakeEye(window,state);
 
     //Game Over screen after Collision
-    gameOverScreen(window,state);
+    gameOverScreen(window,state,font);
      
     //Score Text
     if(!state.gameOver) scoreTracking(window,state);
@@ -207,6 +216,11 @@ int main(){
     RenderWindow window(VideoMode({WIN_W, WIN_H}),"Snake Game");
     window.setFramerateLimit(10);
 
+    Font font;
+        if(!font.openFromFile("fonts/pixel.ttf")){
+            std::cout<<"Font did not load";
+        }
+
     GameState state;
     initState(state);
 
@@ -215,7 +229,7 @@ int main(){
         closeWindow(window);
         keyInput(state);
         update(state);
-        renderGame(window,state);  
+        renderGame(window,state,font);  
 
     }
 }
