@@ -17,6 +17,25 @@ struct GameState{
     int score;
 };
 
+void background(RenderWindow& window){
+    int X = WIN_W / GRID_SIZE;
+    int Y = WIN_H / GRID_SIZE;
+
+    for (int x = 0; x <X; x++) {
+        for (int y = 0; y <Y; y++) {
+            RectangleShape box(sf::Vector2f({(float)GRID_SIZE, (float)GRID_SIZE}));
+            box.setPosition({(float)(x * GRID_SIZE), (float)(y * GRID_SIZE)});
+            if ((x+y) % 2 == 0) {               
+                box.setFillColor(Color(170,215,81));      
+            }
+            else {
+                box.setFillColor(Color(162,209,73));
+            }
+            window.draw(box);
+        }
+    }
+}
+
 void initState(GameState& state){
     state.snake.clear();
     state.snake.push_back(Vector2i(2,WIN_H/(2*GRID_SIZE)));
@@ -37,7 +56,7 @@ void drawSnake(RenderWindow& window,Color color ,Vector2i cordinate){
 
 void drawFood(RenderWindow& window ,Vector2i cordinate){
     CircleShape food(GRID_SIZE/2,100);
-    food.setFillColor(Color::Red);
+    food.setFillColor(Color(234,67,53));
     food.setPosition({(float)(cordinate.x * GRID_SIZE) ,(float)(cordinate.y * GRID_SIZE)});
     window.draw(food);
 }
@@ -78,8 +97,8 @@ void scoreTracking(RenderWindow& window, const GameState& state){
         return;
     }
 
-    Text score(font, "Score:" + std::to_string(state.score), 20);
-    score.setFillColor(Color::White);
+    Text score(font, "Score:" + std::to_string(state.score), 25);
+    score.setFillColor(Color(26,54,93));
     score.setPosition({20.f, 20.f});
     window.draw(score);
 }
@@ -101,7 +120,7 @@ void keyInput(GameState& state){
 void gameOverScreen(RenderWindow& window,const GameState& state){
     if(state.gameOver==true){
         RectangleShape overlay(Vector2f(window.getSize().x,window.getSize().y));
-        overlay.setFillColor(Color(255,0,0,80));
+        overlay.setFillColor(Color(0,0,0,30));
         window.draw(overlay);
 
         Font font;
@@ -155,11 +174,12 @@ void update(GameState& state){
 
 void renderGame(RenderWindow& window ,const GameState& state){
     window.clear(Color::Black);
+    background(window);
     drawFood(window,state.food);
 
     // Drawing Snake
     for(int i=0;i<state.snake.size();i++){
-        drawSnake(window,Color::Green,state.snake[i]);
+        drawSnake(window,Color(76,139,245),state.snake[i]);
     }
 
     //SnakeEye
