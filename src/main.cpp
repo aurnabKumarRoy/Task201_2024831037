@@ -73,12 +73,12 @@ void drawSnakeEye(RenderWindow& window,const GameState& state){
 
 void scoreTracking(RenderWindow& window, const GameState& state){
     Font font;
-    if(!font.openFromFile("fonts/ARIALN.TTF")){
+    if(!font.openFromFile("fonts/pixel.ttf")){
         std::cout<<"Font did not load";
         return;
     }
 
-    Text score(font, "Score: " + std::to_string(state.score), 40);
+    Text score(font, "Score:" + std::to_string(state.score), 20);
     score.setFillColor(Color::White);
     score.setPosition({20.f, 20.f});
     window.draw(score);
@@ -98,11 +98,27 @@ void keyInput(GameState& state){
     if(Keyboard::isKeyPressed(Keyboard::Key::S) && state.direction!='U') state.direction='D';
 }
 
-void update(GameState& state){
+void gameOverScreen(RenderWindow& window,const GameState& state){
     if(state.gameOver==true){
-        return initState(state);
-    }
+        RectangleShape overlay(Vector2f(window.getSize().x,window.getSize().y));
+        overlay.setFillColor(Color(255,0,0,80));
+        window.draw(overlay);
 
+        Font font;
+        if(!font.openFromFile("fonts/pixel.ttf")){
+            std::cout<<"Font did not load";
+        return;
+        }
+
+        Text text1(font,"GAME OVER \n\nScore:"+std::to_string(state.score),45);
+        text1.setFillColor(Color::White);
+        text1.setPosition({WIN_W/3,WIN_H/3});
+        window.draw(text1);
+    }
+}
+
+void update(GameState& state){
+    if(state.gameOver==true) return;
     if(state.direction=='X') return;
 
     Vector2i head=state.snake[0];
@@ -139,7 +155,7 @@ void update(GameState& state){
 
 void renderGame(RenderWindow& window ,const GameState& state){
     window.clear(Color::Black);
-        drawFood(window,state.food);
+    drawFood(window,state.food);
 
     // Drawing Snake
     for(int i=0;i<state.snake.size();i++){
@@ -148,9 +164,12 @@ void renderGame(RenderWindow& window ,const GameState& state){
 
     //SnakeEye
     drawSnakeEye(window,state);
+
+    //Game Over screen after Collision
+    gameOverScreen(window,state);
      
     //Score Text
-    scoreTracking(window,state);
+    if(!state.gameOver) scoreTracking(window,state);
     
     window.display();
 
